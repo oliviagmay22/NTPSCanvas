@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Progress</title>
+    <style>
+        /* Style the progress bar container */
+        .progress-container {
+            width: 100%;
+            height: 30px;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+        /* Style the actual progress bar */
+        .progress-bar {
+            height: 100%;
+            width: 0%;  /* This will be dynamically updated */
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 30px; /* Vertically center the text */
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Course Progress</h2>
+    <p>Your progress in the course is displayed below. It will automatically update as you complete modules:</p>
+
+    <!-- Progress bar container -->
+    <div class="progress-container">
+        <!-- Progress bar itself -->
+        <div id="progress-bar" class="progress-bar">0%</div>
+    </div>
+
+    <script>
+        // Replace with your Canvas API access token
+        const accessToken = 'YOUR_ACCESS_TOKEN';
+        const courseId = 'YOUR_COURSE_ID';  // Replace with your course ID
+
+        // Fetch student progress data from Canvas API
+        async function getProgress() {
+            const response = await fetch(`https://canvas.instructure.com/api/v1/courses/${courseId}/modules`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+
+            const modules = await response.json();
+
+            let completedItems = 0;
+            let totalItems = 0;
+
+            for (let module of modules) {
+                for (let item of module.items) {
+                    totalItems++;
+
+                    // Assuming you have a way to check if a student has completed the item
+                    // For simplicity, we simulate checking the completion here:
+                    if (item.completed) {
+                        completedItems++;
+                    }
+                }
+            }
+
+            // Calculate the progress percentage
+            const progress = (completedItems / totalItems) * 100;
+
+            // Update the progress bar with the calculated percentage
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = progress + '%';
+            progressBar.innerText = `${Math.round(progress)}%`;
+        }
+
+        // Call the function to get progress data
+        getProgress();
+    </script>
+
+</body>
+</html>
